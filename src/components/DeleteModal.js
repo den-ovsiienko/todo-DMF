@@ -17,7 +17,7 @@ const DeleteModal = ({props}) => {
       </ModalBody>
       <ModalFooter>
         <Button color='secondary' onClick={props.onClose}>Close</Button>
-        <Button color='danger' onClick={() => props.onDelete(props.todo)}>Delete</Button>
+        <Button color='danger' onClick={() => props.onDelete(props.stateIndex, props.index)}>Delete</Button>
       </ModalFooter>
     </Modal>
   )

@@ -1,54 +1,88 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, current } from "@reduxjs/toolkit";
 
 export const todoSlice = createSlice({
   name: 'todo',
   initialState: {
     todoList: [
       {
-        id: 0,
-        title: 'Create TODO App',
-        description: 'Create a SPA for DiscoverMyFranchise. dhjgkjkdghjkdfhgkjdfhgkdfhgjkfdhgjkdghkfjdhgjksdghlksfhgkdshglkshfglkdfhgksd',
         state: 'TODO',
-        dueDate: 'Oct 31, 2021'
-      }
+        color: 'danger',
+        todos: [
+          {
+            id: '1',
+            title: 'Create TODO App',
+            description: 'Create a SPA for DiscoverMyFranchise.',
+            dueDate: '2021-10-31'
+          },
+          {
+            id: '2',
+            title: 'Shopping',
+            description: 'Drive to Nesters to buy food.',
+            dueDate: '2021-11-5'
+          },
+        ]
+      },
+      {
+        state: 'In Progress',
+        color: 'warning',
+        todos: [
+          {
+            id: '3',
+            title: 'Improve TODO App',
+            description: 'Create a SPA for DiscoverMyFranchise.',
+            dueDate: '2021-10-31'
+          },
+        ]
+      },
+      {
+        state: 'Done',
+        color: 'success',
+        todos: [
+          {
+            id: '4',
+            title: 'Done TODO App',
+            description: 'Create a SPA for DiscoverMyFranchise.',
+            dueDate: '2021-10-31'
+          }
+        ]
+      },
     ],
-    countId: 0
+    countId: 4
   },
   reducers: {
     add: (state, action) => {
       state.countId++;
-      state.todoList.push({...action.payload, id: state.countId});
+      state.todoList.at(action.payload.stateIndex).todos.push({...action.payload.todo, id: '' + state.countId});
+      state.todoList.at(action.payload.stateIndex)['sortLabel'] = undefined;
     },
     remove: (state, action) => {
-      state.todoList = state.todoList.filter((todo) => todo.id !== action.payload);
-    },
-    toggleState: (state, action) => {
-      state.todoList.forEach((todo) => {
-        if(todo.id === action.payload) {
-          switch(todo.state) {
-            case 'TODO': 
-              todo.state = 'In Progress';
-              break;
-            case 'In Progress': 
-              todo.state = 'Done'
-              break;
-            case 'Done': 
-              todo.state = 'TODO'
-              break;
-          }
-        }
-      });
+      state.todoList.at(action.payload.stateIndex).todos.splice(action.payload.index, 1);
     },
     changeState: (state, action) => {
-      state.todoList.at(action.payload.index).state = action.payload.state;
+      const [removed] = state.todoList.at(parseInt(action.payload.sourceStateIndex)).todos.splice(action.payload.sourceIndex, 1);
+      state.todoList.at(parseInt(action.payload.destStateIndex)).todos.splice(action.payload.destIndex, 0, current(removed));
+      state.todoList.at(action.payload.destStateIndex)['sortLabel'] = undefined;
     },
-    reorder: (state, action) => {
-      const [removed] = state.todoList.splice(action.payload.startIndex, 1);
-      state.todoList.splice(action.payload.endIndex, 0, removed);
+    reorderTodo: (state, action) => {
+      const [removed] = state.todoList.at(parseInt(action.payload.stateIndex)).todos.splice(action.payload.sourceIndex, 1);
+      state.todoList.at(parseInt(action.payload.stateIndex)).todos.splice(action.payload.destIndex, 0, current(removed));
+      state.todoList.at(action.payload.stateIndex)['sortLabel'] = undefined;
+    },
+    reorderTable: (state, action) => {
+      const [removed] = state.todoList.splice(action.payload.sourceIndex, 1);
+      state.todoList.splice(action.payload.destIndex, 0, current(removed));
+    },
+    edit: (state, action) => {
+      state.todoList[action.payload.stateIndex].todos[action.payload.index] = action.payload.todo;
+      state.todoList.at(action.payload.stateIndex)['sortLabel'] = undefined;
+    },
+    sort: (state, action) => {
+      state.todoList.at(action.payload.index).todos.sort(action.payload.func)
+      state.todoList.at(action.payload.index)['sortLabel'] = action.payload.sortLabel;
     }
   },
 })
 
-export const { add, remove, toggleState, changeState, reorder } = todoSlice.actions
+export const { add, remove, toggleState, changeState, reorderTodo, reorderTable, edit, sort} = todoSlice.actions
 
 export default todoSlice.reducer
