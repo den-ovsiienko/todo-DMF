@@ -52,21 +52,21 @@ export const todoSlice = createSlice({
   reducers: {
     add: (state, action) => {
       state.countId++;
-      state.todoList.at(action.payload.stateIndex).todos.push({...action.payload.todo, id: '' + state.countId});
-      state.todoList.at(action.payload.stateIndex)['sortLabel'] = undefined;
+      state.todoList[action.payload.stateIndex].todos.push({...action.payload.todo, id: '' + state.countId});
+      state.todoList[action.payload.stateIndex]['sortLabel'] = undefined;
     },
     remove: (state, action) => {
-      state.todoList.at(action.payload.stateIndex).todos.splice(action.payload.index, 1);
+      state.todoList[action.payload.stateIndex].todos.splice(action.payload.index, 1);
     },
     changeState: (state, action) => {
-      const [removed] = state.todoList.at(parseInt(action.payload.sourceStateIndex)).todos.splice(action.payload.sourceIndex, 1);
-      state.todoList.at(parseInt(action.payload.destStateIndex)).todos.splice(action.payload.destIndex, 0, current(removed));
-      state.todoList.at(action.payload.destStateIndex)['sortLabel'] = undefined;
+      const [removed] = state.todoList[parseInt(action.payload.sourceStateIndex)].todos.splice(action.payload.sourceIndex, 1);
+      state.todoList[parseInt(action.payload.destStateIndex)].todos.splice(action.payload.destIndex, 0, current(removed));
+      state.todoList[action.payload.destStateIndex]['sortLabel'] = undefined;
     },
     reorderTodo: (state, action) => {
-      const [removed] = state.todoList.at(parseInt(action.payload.stateIndex)).todos.splice(action.payload.sourceIndex, 1);
-      state.todoList.at(parseInt(action.payload.stateIndex)).todos.splice(action.payload.destIndex, 0, current(removed));
-      state.todoList.at(action.payload.stateIndex)['sortLabel'] = undefined;
+      const [removed] = state.todoList[parseInt(action.payload.stateIndex)].todos.splice(action.payload.sourceIndex, 1);
+      state.todoList[parseInt(action.payload.stateIndex)].todos.splice(action.payload.destIndex, 0, current(removed));
+      state.todoList[action.payload.stateIndex]['sortLabel'] = undefined;
     },
     reorderTable: (state, action) => {
       const [removed] = state.todoList.splice(action.payload.sourceIndex, 1);
@@ -74,11 +74,11 @@ export const todoSlice = createSlice({
     },
     edit: (state, action) => {
       state.todoList[action.payload.stateIndex].todos[action.payload.index] = action.payload.todo;
-      state.todoList.at(action.payload.stateIndex)['sortLabel'] = undefined;
+      state.todoList[action.payload.stateIndex]['sortLabel'] = undefined;
     },
     sort: (state, action) => {
-      state.todoList.at(action.payload.index).todos.sort(action.payload.func)
-      state.todoList.at(action.payload.index)['sortLabel'] = action.payload.sortLabel;
+      state.todoList[action.payload.index].todos.sort(action.payload.func)
+      state.todoList[action.payload.index]['sortLabel'] = action.payload.sortLabel;
     }
   },
 })
