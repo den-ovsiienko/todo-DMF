@@ -2,6 +2,8 @@
 
 ## How to Use
 
+### npm install - Download all the packages used for development
+
 ### npm start - Build/run the TODO App in development mode
 
 ### npm run build - Build the TODO App for production
