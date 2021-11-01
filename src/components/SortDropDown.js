@@ -36,11 +36,11 @@ const SortDropDown = ({onSort, index}) => {
   return (
     <Dropdown toggle={toggleOpen} isOpen={open} size='sm' className='d-inline-block me-2'>
       <DropdownToggle color='secondary' className='rounded rounded-circle mt-1' onClick={toggleOpen}>
-        <i class="bi bi-filter"></i>
+        <i className="bi bi-filter"></i>
       </DropdownToggle>
       <DropdownMenu container="body">
         {sortOptions.map((option) => (
-          <DropdownItem onClick={() => onSort({
+          <DropdownItem key={option.label} onClick={() => onSort({
             index: index,
             func: option.func,
             sortLabel: option.label

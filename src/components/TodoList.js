@@ -1,8 +1,6 @@
-import React, { useState } from 'react'
-import PropTypes from 'prop-types'
-import { Container, Row, Col, Button, Badge, UncontrolledCollapse } from 'reactstrap';
-import Moment from 'react-moment';
-import { Draggable, Droppable } from 'react-beautiful-dnd';
+import React from 'react'
+import { Row, Button } from 'reactstrap';
+import { Droppable } from 'react-beautiful-dnd';
 import SortDropDown from './SortDropDown';
 import Todo from './Todo';
 import moment from 'moment';
@@ -24,7 +22,7 @@ const TodoList = ({ table, tableIndex, onStateChange, onDelete, onAdd, onEdit, o
             className='rounded-circle mt-1'
             onClick={() => onAdd(tableIndex, table)}
           >
-              <i class="bi bi-plus-lg"></i>
+              <i className="bi bi-plus-lg"></i>
           </Button>
           <Button size='sm' disabled color='none' className='rounded-circle mt-1 ms-1'>
             <i className="bi bi-grip-vertical"></i>
@@ -43,12 +41,12 @@ const TodoList = ({ table, tableIndex, onStateChange, onDelete, onAdd, onEdit, o
               for(var key in todo) {
                 if(key === 'dueDate' 
                   && !moment(todo[key]).format('MMM D, YYYY').toLowerCase().includes(filters[key].toLowerCase())) {
-                    return
-                } 
-                if(!todo[key].toLowerCase().includes(filters[key].toLowerCase())) return
+                    return null
+                } else if (key !== 'dueDate' && !todo[key].toLowerCase().includes(filters[key].toLowerCase())) 
+                    return null
               }
               return(
-                <Row>
+                <Row key={todo.id}>
                   <Todo 
                     todo={todo} 
                     index={index} 
@@ -68,13 +66,6 @@ const TodoList = ({ table, tableIndex, onStateChange, onDelete, onAdd, onEdit, o
       </Droppable>
     </>
   )
-}
-
-TodoList.propTypes = {
-  todoList:  PropTypes.array.isRequired,
-  state: PropTypes.string.isRequired,
-  onStateChange: PropTypes.func.isRequired,
-  onDelete: PropTypes.func.isRequired
 }
 
 export default TodoList

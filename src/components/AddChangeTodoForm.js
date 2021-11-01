@@ -53,7 +53,7 @@ const AddChangeTodoForm = ({title, description, state, dueDate, setTitle, setDes
             name='date'
             type='date'
             value={dueDate}
-            alid={dueDate !== ''}
+            valid={dueDate !== ''}
             invalid={dueDate === ''}
             onChange={(e) => setDueDate(e.target.value)}
           />

@@ -1,13 +1,13 @@
 import React from 'react'
-import { Draggable, Droppable } from 'react-beautiful-dnd';
-import { Container, Row, Col, Button, Badge, UncontrolledCollapse } from 'reactstrap';
+import { Draggable } from 'react-beautiful-dnd';
+import { Container, Button, Badge, UncontrolledCollapse } from 'reactstrap';
 import Moment from 'react-moment';
 
 const dateNow = new Date()
 dateNow.setHours(0, 0, 0, 0)
 dateNow.setDate(dateNow.getDate() - 1);
 
-const Todo = ({todo, index, tableIndex, onStateChange, table, onEdit, onDelete}) => {
+const Todo = ({todo, index, tableIndex, table, onEdit, onDelete}) => {
   return (
     <Draggable
       key={todo.id}
@@ -48,7 +48,7 @@ const Todo = ({todo, index, tableIndex, onStateChange, table, onEdit, onDelete})
               </div>
             </div>
             <Button id={`toggler${todo.id}`} size='sm' color='none' className='rounded-circle'>
-              <i class={`bi bi-caret-down-fill`}></i>
+              <i className={`bi bi-caret-down-fill`}></i>
             </Button>
             <Moment format='MMM D, YYYY' className='ms-2'>
               {todo.dueDate}

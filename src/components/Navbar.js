@@ -98,7 +98,7 @@ const TodoNavbar = ({filters, onChange}) => {
                 </DropdownToggle>
                 <DropdownMenu>
                   {filterOptions.map((filter) => {
-                    if(!filter.isActive) return;
+                    if(!filter.isActive) return null;
                     return <DropdownItem key={filter.filterType}>
                       {`${filter.label}`}
                     </DropdownItem>

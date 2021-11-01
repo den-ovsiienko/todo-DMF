@@ -15,7 +15,7 @@ const AddChangeTodoModal = ({props}) => {
       return;
     }
     if(props.data) {
-      props.onEdit(props.stateIndex, props.index, title, description, dueDate);
+      props.onEdit(props.stateIndex, props.index, title, description, dueDate, props.data.id);
       props.data = null
     } else {
       props.onAdd(props.stateIndex, title, description, dueDate);

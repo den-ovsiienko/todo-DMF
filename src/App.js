@@ -3,14 +3,13 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import './App.css';
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import todo, { add, remove, toggleState, changeState, reorderTodo, reorderTable, edit, sort } from './redux/todo'
+import { add, remove, toggleState, changeState, reorderTodo, reorderTable, edit, sort } from './redux/todo'
 import DeleteModal from './components/DeleteModal';
 import TodoNavbar from './components/Navbar'
-import { Container, Row, Col, Button} from 'reactstrap';
+import { Container } from 'reactstrap';
 import TodoList from './components/TodoList';
 import AddChangeTodoModal from './components/AddChangeTodoModal';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
-import AddChangeTodoForm from './components/AddChangeTodoForm';
 
 const App = () => {
   const { todoList } = useSelector(state => state.todo);
@@ -25,7 +24,7 @@ const App = () => {
   });
 
   const handleDeleteModalClose = () => setDeleteProps({...deleteProps, isOpen: false});
-  const handleAddModalClose = (stateIndex) => setAddProps({...addProps, isOpen: false});
+  const handleAddModalClose = () => setAddProps({...addProps, isOpen: false});
 
   const deleteTodo = (stateIndex, index) => {
     dispatch(remove({
@@ -42,7 +41,7 @@ const App = () => {
     })
   }
 
-  const editTodo = (stateIndex, index, title, description, dueDate) => {
+  const editTodo = (stateIndex, index, title, description, dueDate, id) => {
     dispatch(edit({
       stateIndex: stateIndex,
       index: index,
@@ -50,6 +49,7 @@ const App = () => {
         title: title,
         description: description,
         dueDate: dueDate,
+        id: id
       }
     }));
   }
@@ -165,7 +165,7 @@ const App = () => {
               >
               {
                 todoList.map((table, index) => {
-                  if (!table.state.toLowerCase().includes(filters.state.toLowerCase())) return;
+                  if (!table.state.toLowerCase().includes(filters.state.toLowerCase())) return null;
                   return <Draggable
                     key={`table-${index}`}
                     draggableId={`table-${index}`}
