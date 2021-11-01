@@ -3,47 +3,74 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import './App.css';
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { add, remove, toggleState, changeState, reorder } from './redux/todo'
+import todo, { add, remove, toggleState, changeState, reorderTodo, reorderTable, edit, sort } from './redux/todo'
 import DeleteModal from './components/DeleteModal';
 import TodoNavbar from './components/Navbar'
 import { Container, Row, Col, Button} from 'reactstrap';
 import TodoList from './components/TodoList';
-import AddModal from './components/AddModal';
-import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import AddTodoForm from './components/AddTodoForm';
-
-// const getListStyle = isDraggingOver => ({
-//   background: isDraggingOver ? 'lightblue' : 'lightgrey',
-// });
+import AddChangeTodoModal from './components/AddChangeTodoModal';
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
+import AddChangeTodoForm from './components/AddChangeTodoForm';
 
 const App = () => {
   const { todoList } = useSelector(state => state.todo);
   const dispatch = useDispatch();
 
-  const handleDeleteModalClose = () => setDeleteProps({...deleteProps, isOpen: false});
-  const handleAddModalClose = () => setAddProps({...addProps, isOpen: false});
+  const [filters, setFilters] = useState({
+    state: '',
+    title: '',
+    id: '',
+    dueDate: '',
+    description: ''
+  });
 
-  const deleteTodo = (todo) => {
-    dispatch(remove(todo.id));
+  const handleDeleteModalClose = () => setDeleteProps({...deleteProps, isOpen: false});
+  const handleAddModalClose = (stateIndex) => setAddProps({...addProps, isOpen: false});
+
+  const deleteTodo = (stateIndex, index) => {
+    dispatch(remove({
+      stateIndex: stateIndex,
+      index: index
+    }));
     handleDeleteModalClose();
   }
 
-  const addTodo = (title, description, dueDate) => {
+  const onFilterChange = (type, value) => {
+    setFilters({
+      ...filters,
+      [type] : value
+    })
+  }
+
+  const editTodo = (stateIndex, index, title, description, dueDate) => {
+    dispatch(edit({
+      stateIndex: stateIndex,
+      index: index,
+      todo: {
+        title: title,
+        description: description,
+        dueDate: dueDate,
+      }
+    }));
+  }
+
+  const addTodo = (stateIndex, title, description, dueDate) => {
     dispatch(add({
-      title: title,
-      description: description,
-      dueDate: dueDate,
-      state: 'TODO'
+      stateIndex: stateIndex,
+      todo: {
+        title: title,
+        description: description,
+        dueDate: dueDate,
+      }
     }));
     handleAddModalClose();
   }
-
-  const [menuOpen, setMenuOpen] = useState(false)
 
   const [addProps, setAddProps] = useState({
     isOpen: false,
     onClose: handleAddModalClose,
     onAdd: addTodo,
+    onEdit: editTodo
   });
 
   const [deleteProps, setDeleteProps] = useState({
@@ -53,8 +80,34 @@ const App = () => {
   });
 
   const onStateChange = (todo) => dispatch(toggleState(todo.id));
-  const onDelete = (todo) => setDeleteProps({...deleteProps, isOpen: true, todo: todo});
-  const onAdd = () => setAddProps({...addProps, isOpen: true});
+
+  const onAdd = (stateIndex, state) => setAddProps({
+    ...addProps, 
+    isOpen: true, 
+    stateIndex: stateIndex, 
+    state: state,
+  });
+
+  const onEdit = (stateIndex, state, index) => {
+    const todo = todoList.at(stateIndex).todos.at(index)
+    setAddProps({
+      ...addProps, 
+      isOpen: true, 
+      stateIndex: stateIndex, 
+      state: state,
+      index: index,
+      data: todo
+    });
+  }
+
+  const onDelete = (todo, stateIndex, index) => 
+    setDeleteProps({
+      ...deleteProps, 
+      isOpen: true, 
+      todo: todo,
+      stateIndex: stateIndex,
+      index: index
+    });
 
   const onDragEnd = result => {
     console.log(result)
@@ -62,66 +115,90 @@ const App = () => {
 
     if(!destination) return;
 
-    if(source.droppableId !== destination.droppableId) {
-      dispatch(changeState({index: source.index, state: destination.droppableId}));
+    if(destination.droppableId === source.droppableId 
+      && destination.index === source.index) return;
+
+    if(result.type === 'TABLE') {
+      dispatch(reorderTable({
+        sourceIndex: source.index,
+        destIndex: destination.index
+      }))
+      return
     }
 
-    dispatch(reorder({startIndex: source.index, endIndex: destination.index}))
-
+    if(source.droppableId !== destination.droppableId) {
+      dispatch(changeState({
+        sourceStateIndex: source.droppableId,
+        sourceIndex: source.index,
+        destStateIndex: destination.droppableId,
+        destIndex: destination.index, 
+      }));
+    } else {
+      dispatch(reorderTodo({
+        sourceIndex: source.index,
+        destIndex: destination.index,
+        stateIndex: source.droppableId
+      }))
+    }
   }
+
+  const onSort = ({index, func, sortLabel}) => dispatch(sort({
+    index: index,
+    func: func,
+    sortLabel: sortLabel
+  }));
 
   return (
     <>
-      <DeleteModal props={deleteProps} />
-      <AddModal props={addProps}/>
-      <TodoNavbar menuOpen={menuOpen} toggleMenu={() => setMenuOpen(!menuOpen)}/>
+      {deleteProps.isOpen && <DeleteModal props={deleteProps} />}
+      {addProps.isOpen && <AddChangeTodoModal props={addProps} />}
+      <TodoNavbar filters={filters} onChange={onFilterChange}/>
 
       <Container fluid>
         <DragDropContext onDragEnd={onDragEnd}>
-          <Row>
-            <Col xs={12} md={6} xl={menuOpen ? 3 : 4}>
-              <TodoList
-                todoList={todoList}
-                state={'TODO'}
-                onStateChange={onStateChange}
-                onDelete={onDelete}
-              />
-            </Col>
-            <Col xs={12} md={6} xl={menuOpen ? 3 : 4}>
-              <TodoList
-                todoList={todoList}
-                state={'In Progress'}
-                onStateChange={onStateChange}
-                onDelete={onDelete}
-              />
-            </Col>
-            <Col xs={12} md={6} xl={menuOpen ? 3 : 4}>
-              <TodoList
-                todoList={todoList}
-                state={'Done'}
-                onStateChange={onStateChange}
-                onDelete={onDelete}
-              />
-            </Col>
-            <Col xs={12} md={6} xl={3} className={`d-${menuOpen ? 'block' : 'none'} `}>
-              <Container fluid className=' border border-3 border-top-0 border-bottom-0 border-end-0 border-success pt-2 pb-3'>
-                <AddTodoForm onAdd={addTodo} />
-              </Container>
-            </Col>
-          </Row>
-          </DragDropContext>
-        <button onClick={() => dispatch(add({
-          title: 'Create TODO App',
-          description: 'Create a SPA for DiscoverMyFranchise.',
-          state: 'TODO',
-          dueDate: 'Oct 31, 2021'
-        }))} type='button' className='btn btn-info mt-3'>
-          Add Test TODO
-        </button>
-
-        <div className='fixed-bottom d-flex flex-row justify-content-around m-2'>
-          <Button size='lg' color='success rounded-circle' onClick={onAdd}><i class="bi bi-plus-lg"></i></Button>
-        </div>
+          <Droppable direction='horizontal' droppableId='tables' type='TABLE'>
+            {(provided, snapshot) => (
+              <div
+                className='row'
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+              >
+              {
+                todoList.map((table, index) => {
+                  if (!table.state.toLowerCase().includes(filters.state.toLowerCase())) return;
+                  return <Draggable
+                    key={`table-${index}`}
+                    draggableId={`table-${index}`}
+                    index={index}
+                  >
+                    {(provided, snapshot) => (
+                      <div
+                      className='col-12 col-md-6 col-xl-4' 
+                      key={index}
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                      >
+                        <TodoList
+                          table={table}
+                          tableIndex={index}
+                          onStateChange={onStateChange}
+                          onDelete={onDelete}
+                          onAdd={onAdd}
+                          onEdit={onEdit}
+                          onSort={onSort}
+                          filters={filters}
+                        />
+                      </div>
+                    )}
+                  </Draggable>
+                })
+              }
+              {provided.placeholder}
+            </div>
+            )}
+          </Droppable>
+        </DragDropContext>
 
       </Container>
     </>

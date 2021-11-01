@@ -9,5 +9,11 @@
 }
 
 body { 
-  padding-top: 70px; 
+  padding-top: 60px; 
+}
+
+@media only screen and (max-width: 502px) {
+  body {
+    padding-top: 110px; 
+  }
 }

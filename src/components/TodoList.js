@@ -1,73 +1,63 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { Container, Row, Col, Button, Badge, UncontrolledCollapse } from 'reactstrap';
 import Moment from 'react-moment';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
+import SortDropDown from './SortDropDown';
+import Todo from './Todo';
+import moment from 'moment';
 
-const TodoList = ({ todoList, state, onStateChange, onDelete }) => {
-  const color = state === 'TODO' 
-    ? 'danger' : state === 'In Progress' 
-      ? 'warning' : 'success'
+
+const TodoList = ({ table, tableIndex, onStateChange, onDelete, onAdd, onEdit, onSort, filters }) => {
   return (
     <>
-      <h4 className={`text-${color} bg-light mb-0 p-3 rounded border border-3 border-start-0 border-end-0 border-top-0 border-${color} `}>{state}</h4>
-      <Droppable droppableId={state}>
+      <div className={`bg-light d-flex justify-content-between mt-3 p-3 border border-3 border-start-0 border-end-0 border-top-0 border-${table.color}`}>
+        <p className={`text-${table.color} m-0 fs-4`}>{table.state}</p>
+        <div>
+          {table.sortLabel && 
+            <p className='d-inline-block text-primary m-0 me-2 p-0'>{table.sortLabel}</p>
+          }
+          <SortDropDown onSort={onSort} index={tableIndex}/>
+          <Button
+            size='sm' 
+            color={table.color} 
+            className='rounded-circle mt-1'
+            onClick={() => onAdd(tableIndex, table)}
+          >
+              <i class="bi bi-plus-lg"></i>
+          </Button>
+          <Button size='sm' disabled color='none' className='rounded-circle mt-1 ms-1'>
+            <i className="bi bi-grip-vertical"></i>
+          </Button>
+        </div>
+      </div>
+      <Droppable key={tableIndex} droppableId={`${tableIndex}`} type='TODO'>
         {(provided, snapshot) => (
           <div 
-          className={`bg-${color} bg-opacity-25 p-2`}
+          className={`bg-${table.color} ${snapshot.isDraggingOver ? 'bg-opacity-50' : 'bg-opacity-25'} p-2`}
           {...provided.droppableProps}
           ref={provided.innerRef}
         >
           {
-            todoList.map((todo, index) => {
-              if(todo.state !== state) return
+            table.todos.map((todo, index) => {
+              for(var key in todo) {
+                if(key === 'dueDate' 
+                  && !moment(todo[key]).format('MMM D, YYYY').toLowerCase().includes(filters[key].toLowerCase())) {
+                    return
+                } 
+                if(!todo[key].toLowerCase().includes(filters[key].toLowerCase())) return
+              }
               return(
                 <Row>
-                  <Draggable
-                    key={todo.id}
-                    draggableId={`${todo.id}`}
-                    index={index}
-                  >
-                    {(provided, snapshot) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                      >
-                        <Container
-                          fluid 
-                          className={`bg-light p-3 rounded shadow mt-3`}
-                          >
-                          <div className='d-flex justify-content-between'>
-                            <p className='fs-5'>
-                              {todo.title}
-                              <Badge
-                              role='button' 
-                              onDoubleClick={() => onStateChange(todo)} 
-                              pill 
-                              color={color} 
-                              className='ms-1 ms-sm-2'
-                              >
-                                {todo.state}
-                              </Badge>
-                            </p>
-                            <div>
-                              <Button size='sm' color='warning' className='rounded-circle me-2'><i className="bi bi-pencil-fill"></i></Button>
-                              <Button size='sm' color='danger' className='rounded-circle' onClick={() => onDelete(todo)}><i className="bi bi-trash-fill"></i></Button>
-                              <Button size='sm' disabled color='none' className='rounded-circle ms-1 position-relative top-50'><i className="bi bi-grip-vertical"></i></Button>
-                            </div>
-                          </div>
-                          <Button id={`toggler${todo.id}`} size='sm' color='none' className='rounded-circle'><i class="bi bi-caret-down-fill"></i></Button>
-                          <Moment format='MMM D, YYYY' className='ms-2'>
-                            {todo.dueDate}
-                          </Moment>
-                          <UncontrolledCollapse toggler={`toggler${todo.id}`}>
-                            <p className={`border-top border-${color} mt-2 pt-2 ms-0 me-3 mb-0 text-break fst-italic`}>{todo.description}</p>
-                          </UncontrolledCollapse>
-                        </Container>
-                      </div>
-                    )}
-                  </Draggable>
+                  <Todo 
+                    todo={todo} 
+                    index={index} 
+                    tableIndex={tableIndex}
+                    onDelete={onDelete}
+                    onEdit={onEdit}
+                    onStateChange={onStateChange} 
+                    table={table}
+                  />
                 </Row>
               )}
             )
