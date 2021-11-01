@@ -89,7 +89,7 @@ const App = () => {
   });
 
   const onEdit = (stateIndex, state, index) => {
-    const todo = todoList.at(stateIndex).todos.at(index)
+    const todo = todoList[stateIndex].todos[index];
     setAddProps({
       ...addProps, 
       isOpen: true, 
