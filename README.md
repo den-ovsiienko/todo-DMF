@@ -29,5 +29,5 @@ Sort: The user is able to sort TODOs within the table(state) by clicking on the 
 
 Sort by dragging: The user is able to change: the order of the TODOs in each table(state) by dragging the TODO card within the table, the TODO's state by dragging the TODO to a different table, and the order of the tables by dragging the table (this feature is implemented for the laptop screen sizes and is not recommended for tables & mobile phones) 
 
-## Overdue TODOs
+### Overdue TODOs
 The TODOs which have overdue due dates and do not have a 'Done' state are marked as 'Overdue'.
