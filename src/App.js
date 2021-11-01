@@ -110,7 +110,6 @@ const App = () => {
     });
 
   const onDragEnd = result => {
-    console.log(result)
     const { source, destination } = result;
 
     if(!destination) return;
