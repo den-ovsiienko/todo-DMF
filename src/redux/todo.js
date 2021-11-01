@@ -18,7 +18,7 @@ export const todoSlice = createSlice({
             id: '2',
             title: 'Shopping',
             description: 'Drive to Nesters to buy food.',
-            dueDate: '2021-11-5'
+            dueDate: '2021-11-05'
           },
         ]
       },
