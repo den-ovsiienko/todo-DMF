@@ -1,4 +1,6 @@
 import { createSlice, current } from "@reduxjs/toolkit";
+import { todosApi } from "../services/todos";
+import { logout } from "./sharedReducers";
 
 export const todoSlice = createSlice({
   name: 'todo',
@@ -80,6 +82,27 @@ export const todoSlice = createSlice({
       state.todoList[action.payload.index].todos.sort(action.payload.func)
       state.todoList[action.payload.index]['sortLabel'] = action.payload.sortLabel;
     }
+  },
+  extraReducers: (builder) => {
+    builder
+    .addMatcher(logout, (state, action) => {
+      console.log('Logout is called in TODO')
+    })
+    .addMatcher(
+      todosApi.endpoints.getAllTodos.matchFulfilled,
+      (state, action) => {
+        console.log('ALL TODOS IN TOOLKIT', action.payload)
+      }
+    )
+    .addMatcher(
+      todosApi.endpoints.addTodoDummy.matchFulfilled,
+      (state, action) => {
+        console.log('PAYLOAD', action.payload)
+        state.countId++;
+        state.todoList[0].todos.push({...action.payload.todo, id: '' + state.countId});
+        state.todoList[0]['sortLabel'] = undefined;
+      }
+    )
   },
 })
 

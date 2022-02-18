@@ -1,0 +1,89 @@
+{
+  "todos": [
+    {
+      "id": 1,
+      "state": "TODO",
+      "color": "danger",
+      "todos": [
+        {
+          "id": 1,
+          "title": "Create TODO App",
+          "description": "Create a SPA for DiscoverMyFranchise.",
+          "dueDate": "2021-10-31"
+        }
+      ]
+    },
+    {
+      "name": "DUMMY",
+      "id": 2
+    },
+    {
+      "name": "DUMMY",
+      "id": 3
+    },
+    {
+      "name": "DUMMY",
+      "id": 4
+    },
+    {
+      "name": "DUMMY",
+      "id": 5
+    },
+    {
+      "name": "DUMMY",
+      "id": 6
+    },
+    {
+      "name": "DUMMY",
+      "id": 7
+    },
+    {
+      "name": "DUMMY",
+      "id": 8
+    },
+    {
+      "name": "DUMMY",
+      "id": 9
+    },
+    {
+      "name": "DUMMY",
+      "id": 10
+    },
+    {
+      "name": "DUMMY",
+      "id": 11
+    },
+    {
+      "name": "DUMMY",
+      "id": 12
+    },
+    {
+      "name": "DUMMY",
+      "id": 13
+    },
+    {
+      "name": "DUMMY",
+      "id": 14
+    },
+    {
+      "name": "DUMMY",
+      "id": 15
+    },
+    {
+      "name": "DUMMY",
+      "id": 16
+    },
+    {
+      "name": "DUMMY",
+      "id": 17
+    },
+    {
+      "name": "DUMMY",
+      "id": 18
+    },
+    {
+      "name": "DUMMY",
+      "id": 19
+    }
+  ]
+}
